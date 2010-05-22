@@ -890,6 +890,13 @@ static int wpa_config_parse_eap(const struct parse_data *data,
 			ssid->leap++;
 		else
 			ssid->non_leap++;
+
+#ifdef EAP_WSC
+		if (methods[num_methods] == EAP_TYPE_WSC) {
+			wpa_printf(MSG_DEBUG, "Setting g_wsc = 1\n");
+			g_wsc = 1;
+		}
+#endif
 		num_methods++;
 		if (last)
 			break;

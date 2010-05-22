@@ -289,11 +289,17 @@ static int wpa_supplicant_ssid_bss_match(struct wpa_ssid *ssid,
 			break;
 		}
 
+#ifdef EAP_WSC
+		if (!g_wsc) {
+#endif
 		if (!(ie.key_mgmt & ssid->key_mgmt)) {
 			wpa_printf(MSG_DEBUG, "   skip RSN IE - key mgmt "
 				   "mismatch");
 			break;
 		}
+#ifdef EAP_WSC
+		}
+#endif
 
 #ifdef CONFIG_IEEE80211W
 		if (!(ie.capabilities & WPA_CAPABILITY_MGMT_FRAME_PROTECTION)
@@ -333,11 +339,17 @@ static int wpa_supplicant_ssid_bss_match(struct wpa_ssid *ssid,
 			break;
 		}
 
+#ifdef EAP_WSC
+		if (!g_wsc) {
+#endif
 		if (!(ie.key_mgmt & ssid->key_mgmt)) {
 			wpa_printf(MSG_DEBUG, "   skip WPA IE - key mgmt "
 				   "mismatch");
 			break;
 		}
+#ifdef EAP_WSC
+		}
+#endif
 
 		wpa_printf(MSG_DEBUG, "   selected based on WPA IE");
 		return 1;
@@ -677,6 +689,9 @@ static void wpa_supplicant_event_assoc(struct wpa_supplicant *wpa_s,
 		wpa_supplicant_event_associnfo(wpa_s, data);
 
 	wpa_supplicant_set_state(wpa_s, WPA_ASSOCIATED);
+	/*wpa_drv_get_bssid(wpa_s, bssid);
+	printf("ASSOCEVENT BSSID: %x:%x:%x:%x:%x:%x\n", bssid[0],bssid[1],bssid[2],bssid[3],bssid[4],bssid[5]);
+	printf("ASSOCEVENT BSSID: %x:%x:%x:%x:%x:%x\n", wpa_s->bssid[0],wpa_s->bssid[1],wpa_s->bssid[2],wpa_s->bssid[3],wpa_s->bssid[4],wpa_s->bssid[5]);*/
 	if (wpa_s->use_client_mlme)
 		os_memcpy(bssid, wpa_s->bssid, ETH_ALEN);
 	if (wpa_s->use_client_mlme ||

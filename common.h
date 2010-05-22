@@ -513,4 +513,8 @@ typedef u32 __be32;
 typedef u64 __be64;
 #endif /* Dm: */
 
+#ifdef EAP_WSC
+extern int g_wsc;
+#endif
+
 #endif /* COMMON_H */

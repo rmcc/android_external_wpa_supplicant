@@ -58,6 +58,7 @@ typedef enum {
 	EAP_TYPE_PAX = 46 /* RFC 4746 */,
 	EAP_TYPE_PSK = 47 /* RFC 4764 */,
 	EAP_TYPE_SAKE = 48 /* RFC 4763 */,
+	EAP_TYPE_WSC = 253, /*Wireless Simple Config*/
 	EAP_TYPE_EXPANDED = 254 /* RFC 3748 */,
 	EAP_TYPE_GPSK = 255 /* EXPERIMENTAL - type not yet allocated
 			     * draft-ietf-emu-eap-gpsk-01.txt */

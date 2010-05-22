@@ -342,9 +342,11 @@ static void
 wpa_driver_wext_event_wireless_custom(void *ctx, char *custom)
 {
 	union wpa_event_data data;
+	char *spos;
+	int bytes;
 
 	wpa_printf(MSG_MSGDUMP, "WEXT: Custom wireless event: '%s'",
-		   custom);
+			custom);
 
 	os_memset(&data, 0, sizeof(data));
 	/* Host AP driver */
@@ -397,11 +399,32 @@ wpa_driver_wext_event_wireless_custom(void *ctx, char *custom)
 	done:
 		os_free(data.assoc_info.resp_ies);
 		os_free(data.assoc_info.req_ies);
+	} else if (strncmp(custom, "PRE-AUTH", 8) == 0) {
+		u8 res;
+
+		spos = custom + 8;
+
+		bytes = strspn(spos, "0123456789abcdefABCDEF");
+		if (!bytes || (bytes & 1))
+			return;
+		bytes /= 2;
+
+		if (bytes < 8)
+			return;
+
+		hexstr2bin(spos, data.pmkid_candidate.bssid, ETH_ALEN);
+		spos += ETH_ALEN * 2;
+		hexstr2bin(spos, &res, 1);
+		data.pmkid_candidate.index = res;
+		spos += 2;
+		hexstr2bin(spos, &res, 1);
+		data.pmkid_candidate.preauth = res;
+		wpa_supplicant_event(ctx, EVENT_PMKID_CANDIDATE, &data);
 #ifdef CONFIG_PEERKEY
 	} else if (os_strncmp(custom, "STKSTART.request=", 17) == 0) {
 		if (hwaddr_aton(custom + 17, data.stkstart.peer)) {
 			wpa_printf(MSG_DEBUG, "WEXT: unrecognized "
-				   "STKSTART.request '%s'", custom + 17);
+					"STKSTART.request '%s'", custom + 17);
 			return;
 		}
 		wpa_supplicant_event(ctx, EVENT_STKSTART, &data);
@@ -2522,6 +2545,10 @@ static char *wpa_driver_get_country_code(int channels)
 	return country;
 }
 
+#ifdef CONFIG_DRIVER_AR6000
+extern int ar6000_priv_driver_cmd(void *priv, char *cmd, char *buf, size_t buf_len);
+#endif
+
 static int wpa_driver_priv_driver_cmd(void *priv, char *cmd, char *buf, size_t buf_len)
 {
 	struct wpa_driver_wext_data *drv = priv;
@@ -2560,9 +2587,15 @@ static int wpa_driver_priv_driver_cmd(void *priv, char *cmd, char *buf, size_t b
 	iwr.u.data.pointer = buf;
 	iwr.u.data.length = buf_len;
 
+#ifdef CONFIG_DRIVER_AR6000
+	if ((ret = ar6000_priv_driver_cmd(priv, cmd, buf, buf_len)) < 0) {
+		perror("ioctl[AR6000_IOCTL_EXTENDED]");
+	}
+#else
 	if ((ret = ioctl(drv->ioctl_sock, SIOCSIWPRIV, &iwr)) < 0) {
 		perror("ioctl[SIOCSIWPRIV]");
 	}
+#endif
 
 	if (ret < 0) {
 		wpa_printf(MSG_ERROR, "%s failed", __func__);
@@ -2592,6 +2625,7 @@ static int wpa_driver_priv_driver_cmd(void *priv, char *cmd, char *buf, size_t b
 	return ret;
 }
 #endif
+
 
 const struct wpa_driver_ops wpa_driver_wext_ops = {
 	.name = "wext",

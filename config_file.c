@@ -105,13 +105,17 @@ static int wpa_config_validate_network(struct wpa_ssid *ssid, int line)
 		}
 		wpa_config_update_psk(ssid);
 	}
-
+#ifdef EAP_WSC
+if(!g_wsc) {
+#endif
 	if ((ssid->key_mgmt & WPA_KEY_MGMT_PSK) && !ssid->psk_set) {
 		wpa_printf(MSG_ERROR, "Line %d: WPA-PSK accepted for key "
 			   "management, but no PSK configured.", line);
 		errors++;
 	}
-
+#ifdef EAP_WSC
+}
+#endif
 	if ((ssid->group_cipher & WPA_CIPHER_CCMP) &&
 	    !(ssid->pairwise_cipher & WPA_CIPHER_CCMP) &&
 	    !(ssid->pairwise_cipher & WPA_CIPHER_NONE)) {
@@ -398,6 +402,11 @@ struct wpa_config * wpa_config_read(const char *name)
 					   line, so);
 				errors++;
 			}
+#ifdef EAP_WSC
+                } else if (strncmp(pos, "wsc_done=", 9) == 0) {
+                        g_wsc = (atoi(pos + 9)==1)?0:1;
+                        wpa_printf(MSG_DEBUG, "g_wsc = %d\n", g_wsc);
+#endif
 		} else {
 			wpa_printf(MSG_ERROR, "Line %d: Invalid configuration "
 				   "line '%s'.", line, pos);

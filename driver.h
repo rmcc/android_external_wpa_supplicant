@@ -764,6 +764,18 @@ struct wpa_driver_ops {
 	 *
 	 */
      int (*driver_cmd)(void *priv, char *cmd, char *buf, size_t buf_len);
+
+#ifdef WSC_NEW_IE
+       int (*set_wsc_probe_request_ie)(void *priv, u8 *iebuf, int iebuflen);
+       int (*start_receive_beacons)(void *priv);
+       int (*stop_receive_beacons)(void *priv);
+       int (*init_l2_packet)(void *priv, void (*handler)(void *ctx, const unsigned char *src_addr, const unsigned char *buf, size_t len));
+       int (*deinit_l2_packet)(void *priv);
+       int (*process_frame)(void *priv, void *ctx, const unsigned char *src_addr, const unsigned char *buf, size_t len, unsigned char *newbuf, int *newlen, unsigned char *frameType);
+       int (*start_receive_pr_resps)(void *priv);
+       int (*stop_receive_pr_resps)(void *priv);
+#endif
+
 };
 
 #endif /* DRIVER_H */

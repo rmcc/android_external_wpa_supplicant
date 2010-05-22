@@ -707,4 +707,80 @@ static inline int wpa_drv_driver_cmd(struct wpa_supplicant *wpa_s,
 	return -1;
 }
 
+#ifdef WSC_NEW_IE
+static inline int wpa_drv_set_wsc_probe_request_ie(
+					struct wpa_supplicant *wpa_s,
+					u8 *iebuf, int iebuflen)
+{
+	if (wpa_s->driver->set_wsc_probe_request_ie)
+		return wpa_s->driver->set_wsc_probe_request_ie(wpa_s->drv_priv,
+						 iebuf, iebuflen);
+	return -1;
+}
+
+static inline int wpa_drv_start_receive_beacons(
+					struct wpa_supplicant *wpa_s)
+{
+	if (wpa_s->driver->start_receive_beacons)
+		return wpa_s->driver->start_receive_beacons(wpa_s->drv_priv);
+	return -1;
+}
+
+static inline int wpa_drv_stop_receive_beacons(
+					struct wpa_supplicant *wpa_s)
+{
+	if (wpa_s->driver->stop_receive_beacons)
+		return wpa_s->driver->stop_receive_beacons(wpa_s->drv_priv);
+	return -1;
+}
+
+static inline int wpa_drv_init_l2_packet(
+					struct wpa_supplicant *wpa_s,
+					void (*handler)(void *ctx, const unsigned char *src_addr,
+							const unsigned char *buf, size_t len))
+{
+	if (wpa_s->driver->init_l2_packet)
+		return wpa_s->driver->init_l2_packet(wpa_s->drv_priv, handler);
+	return -1;
+}
+
+static inline int wpa_drv_deinit_l2_packet(
+					struct wpa_supplicant *wpa_s)
+{
+	if (wpa_s->driver->deinit_l2_packet)
+		return wpa_s->driver->deinit_l2_packet(wpa_s->drv_priv);
+	return -1;
+}
+
+static inline int wpa_drv_process_frame(
+					struct wpa_supplicant *wpa_s,
+					void *ctx,
+					const unsigned char *src_addr, const unsigned char *buf,
+					size_t len, unsigned char *newbuf, int *newlen,
+					unsigned char *frameType)
+{
+	if (wpa_s->driver->process_frame)
+		return wpa_s->driver->process_frame(wpa_s->drv_priv, ctx, src_addr,
+							buf, len, newbuf, newlen, frameType);
+	return -1;
+}
+
+static inline int wpa_drv_start_receive_pr_resps(
+					struct wpa_supplicant *wpa_s)
+{
+	if (wpa_s->driver->start_receive_pr_resps)
+		return wpa_s->driver->start_receive_pr_resps(wpa_s->drv_priv);
+	return -1;
+}
+
+static inline int wpa_drv_stop_receive_pr_resps(
+					struct wpa_supplicant *wpa_s)
+{
+	if (wpa_s->driver->stop_receive_pr_resps)
+		return wpa_s->driver->stop_receive_pr_resps(wpa_s->drv_priv);
+	return -1;
+}
+
+#endif /*  WSC_NEW_IE */
+
 #endif /* WPA_SUPPLICANT_I_H */

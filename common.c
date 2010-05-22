@@ -20,7 +20,7 @@
 #ifdef CONFIG_DEBUG_FILE
 static FILE *out_file = NULL;
 #endif /* CONFIG_DEBUG_FILE */
-int wpa_debug_level = MSG_INFO;
+int wpa_debug_level = MSG_ERROR;
 int wpa_debug_show_keys = 0;
 int wpa_debug_timestamp = 0;
 

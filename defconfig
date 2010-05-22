@@ -321,3 +321,10 @@ CONFIG_PEERKEY=y
 
 # Add support for writing debug log to a file (/tmp/wpa_supplicant-log-#.txt)
 #CONFIG_DEBUG_FILE=y
+
+# For Wi-Fi Simple Configuration
+#CONFIG_EAP_WSC=y
+
+# Use Madwifi driver that supports new WSC IEs
+#CONFIG_WSC_IE=y
+

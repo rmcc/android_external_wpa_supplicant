@@ -2,6 +2,15 @@ ifndef CC
 CC=gcc
 endif
 
+
+ifeq ($(CC),fc6-gcc)
+# temporary work around for missing dynamic link support in the fc6-compiler
+# to be fixed later
+# switch compiler back to local gcc.
+CC=gcc
+endif
+
+
 ifndef CFLAGS
 CFLAGS = -MMD -O2 -Wall -g
 endif
@@ -113,6 +122,12 @@ endif
 ifdef CONFIG_DRIVER_MADWIFI
 CFLAGS += -DCONFIG_DRIVER_MADWIFI
 OBJS_d += driver_madwifi.o
+CONFIG_WIRELESS_EXTENSION=y
+endif
+
+ifdef CONFIG_DRIVER_AR6000
+CFLAGS += -DCONFIG_DRIVER_AR6000
+OBJS_d += driver_ar6000.o
 CONFIG_WIRELESS_EXTENSION=y
 endif
 
@@ -418,6 +433,20 @@ CFLAGS += -DEAP_VENDOR_TEST
 OBJS += eap_vendor_test.o
 endif
 CONFIG_IEEE8021X_EAPOL=y
+endif
+
+ifdef CONFIG_EAP_WSC
+# EAP-WSC Wireless Simple config files
+CFLAGS += -DEAP_WSC
+OBJS += eap_wsc.o UdpLib.o
+LIBS += -lssl -lcrypto
+CONFIG_IEEE8021X_EAPOL=y
+endif
+
+ifdef CONFIG_WSC_IE
+# Support for new WSC IEs
+CFLAGS += -DWSC_NEW_IE
+OBJS += wsc_ie.o
 endif
 
 ifdef CONFIG_IEEE8021X_EAPOL

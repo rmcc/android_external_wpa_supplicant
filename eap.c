@@ -532,7 +532,7 @@ SM_STEP(EAP)
 	if (eapol_get_bool(sm, EAPOL_eapRestart) &&
 	    eapol_get_bool(sm, EAPOL_portEnabled))
 		SM_ENTER_GLOBAL(EAP, INITIALIZE);
-	else if (!eapol_get_bool(sm, EAPOL_portEnabled) || sm->force_disabled)
+	else if (!eapol_get_bool(sm, EAPOL_portEnabled)) // || sm->force_disabled)
 		SM_ENTER_GLOBAL(EAP, DISABLED);
 	else if (sm->num_rounds > EAP_MAX_AUTH_ROUNDS) {
 		/* RFC 4137 does not place any limit on number of EAP messages

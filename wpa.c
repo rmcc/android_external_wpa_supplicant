@@ -706,6 +706,8 @@ static int wpa_gen_wpa_ie_wpa(u8 *wpa_ie, size_t wpa_ie_len,
 			  WPA_SELECTOR_LEN);
 	} else if (key_mgmt == WPA_KEY_MGMT_WPA_NONE) {
 		os_memcpy(pos, WPA_AUTH_KEY_MGMT_NONE, WPA_SELECTOR_LEN);
+	} else if (key_mgmt == WPA_KEY_MGMT_IEEE8021X_NO_WPA) {
+		memcpy(pos, WPA_AUTH_KEY_MGMT_UNSPEC_802_1X, WPA_SELECTOR_LEN);
 	} else {
 		wpa_printf(MSG_WARNING, "Invalid key management type (%d).",
 			   key_mgmt);
@@ -781,6 +783,8 @@ static int wpa_gen_wpa_ie_rsn(u8 *rsn_ie, size_t rsn_ie_len,
 	} else if (key_mgmt == WPA_KEY_MGMT_PSK) {
 		os_memcpy(pos, RSN_AUTH_KEY_MGMT_PSK_OVER_802_1X,
 			  RSN_SELECTOR_LEN);
+	} else if (key_mgmt == WPA_KEY_MGMT_IEEE8021X_NO_WPA) {
+		memcpy(pos, RSN_AUTH_KEY_MGMT_UNSPEC_802_1X, RSN_SELECTOR_LEN);
 	} else {
 		wpa_printf(MSG_WARNING, "Invalid key management type (%d).",
 			   key_mgmt);

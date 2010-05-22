@@ -27,6 +27,9 @@
 #include "config.h"
 #include "l2_packet.h"
 #include "wpa_supplicant_i.h"
+#ifdef WSC_NEW_IE
+#include "wsc_ie.h"
+#endif
 #include "ctrl_iface.h"
 #include "ctrl_iface_dbus.h"
 #include "pcsc_funcs.h"
@@ -1313,6 +1316,12 @@ int wpa_supplicant_set_suites(struct wpa_supplicant *wpa_s,
 	}
 
 	sel = ie.key_mgmt & ssid->key_mgmt;
+#ifdef EAP_WSC
+	if (g_wsc) {
+		wpa_s->key_mgmt = WPA_KEY_MGMT_IEEE8021X_NO_WPA;
+		wpa_msg(wpa_s, MSG_DEBUG, "WPA: using KEY_MGMT 802.1X_NO_WPA");
+	} else 
+#endif 
 	if (sel & WPA_KEY_MGMT_IEEE8021X) {
 		wpa_s->key_mgmt = WPA_KEY_MGMT_IEEE8021X;
 		wpa_msg(wpa_s, MSG_DEBUG, "WPA: using KEY_MGMT 802.1X");
@@ -2200,6 +2209,13 @@ static int wpa_supplicant_init_iface(struct wpa_supplicant *wpa_s,
 			   sizeof(wpa_s->bridge_ifname));
 	}
 
+#ifdef WSC_NEW_IE
+	if (wsc_ie_init(wpa_s) < 0)
+	{
+		return -1;
+	}
+#endif
+
 	return 0;
 }
 
@@ -2399,6 +2415,10 @@ static void wpa_supplicant_deinit_iface(struct wpa_supplicant *wpa_s)
 		wpa_drv_set_countermeasures(wpa_s, 0);
 		wpa_clear_keys(wpa_s, NULL);
 	}
+
+#ifdef WSC_NEW_IE
+	wsc_ie_deinit(wpa_s);
+#endif
 
 	wpas_dbus_unregister_iface(wpa_s);
 
